@@ -28,8 +28,9 @@ var GameNode = cc.Layer.extend({
             this.preload_resources.push(folderGameResource+"board.png");
             this.preload_resources.push(folderGameResource+"score-board.png");
             this.preload_resources.push(folderGameResource+"cage.png");
-            // this.preload_resources.push(folderGameResource+"fight_effect2.png");
-            // this.preload_resources.push(folderGameResource+"merge-animation.png");
+            this.preload_resources.push(folderGameResource+"yellow-spark.png");
+            this.preload_resources.push(folderGameResource+"red-spark.png");
+            this.preload_resources.push(folderGameResource+"blue-spark.png");
             // this.preload_resources.push(folderGameResource+"enemy-merge-animation.png");
             
             
