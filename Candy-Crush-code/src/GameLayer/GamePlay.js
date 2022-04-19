@@ -198,9 +198,9 @@ var GamePlay = cc.Layer.extend({
 	onTouchEnded:function(touch, event)
 	{
         
-        for(var i=0;i<this.allItem.length;i++)
+        for(var i=0;i<5;i++)
         {
-            for(var j=0;j<this.allItem[i].length;j++)
+            for(var j=0;j<6;j++)
             {
                 
                 this.endRect = this.allItem[i][j].getBoundingBox();
@@ -216,12 +216,13 @@ var GamePlay = cc.Layer.extend({
                     cc.log("j value "+j);
                     if((this.endPoint.x>this.startPoint.x) && (this.endPoint.y>=this.startPoint.y-this.threshold && this.endPoint.y<=this.startPoint.y+this.threshold))
                     {
-                        this.startItem.runAction(cc.MoveBy.create(1,100*this.imgBoard.getScaleX(),0));
-                        this.endItem.runAction(cc.MoveBy.create(1,-100*this.imgBoard.getScaleX(),0));
+                        this.startItem.runAction(cc.MoveBy.create(.5,100*this.imgBoard.getScaleX(),0));
+                        this.endItem.runAction(cc.MoveBy.create(.5,-100*this.imgBoard.getScaleX(),0));
                         cc.log("Right");
                         this.allItem[i][j] = this.startItem;
                         this.allItem[i][j-1] = this.endItem;
                         this.searchMatch(i,j);
+                        this.searchMatch(i,j-1);
                       
                         
 
@@ -287,52 +288,58 @@ var GamePlay = cc.Layer.extend({
                     }
                     else if((this.endPoint.x<this.startPoint.x)&& (this.endPoint.y>=this.startPoint.y-this.threshold && this.endPoint.y<=this.startPoint.y+this.threshold))
                     {
-                        this.startItem.runAction(cc.MoveBy.create(1,-100*this.imgBoard.getScaleX(),0));
-                        this.endItem.runAction(cc.MoveBy.create(1,100*this.imgBoard.getScaleX(),0));
+                        this.startItem.runAction(cc.MoveBy.create(.5,-100*this.imgBoard.getScaleX(),0));
+                        this.endItem.runAction(cc.MoveBy.create(.5,100*this.imgBoard.getScaleX(),0));
                         cc.log("Left");
                         
                         this.allItem[i][j] = this.startItem;
                         this.allItem[i][j+1] = this.endItem;
+                        this.searchMatch(i,j);
+                        this.searchMatch(i,j+1);
 
-                        for(var i=0;i<this.allItem.length;i++)
-                        {
-                            for(var j=0;j<this.allItem[i].length;j++)
-                            {
-                                cc.log("End Tag--->  "+this.allItem[i][j].getTag());
-                            }
-                        }
+                        // for(var i=0;i<this.allItem.length;i++)
+                        // {
+                        //     for(var j=0;j<this.allItem[i].length;j++)
+                        //     {
+                        //         cc.log("End Tag--->  "+this.allItem[i][j].getTag());
+                        //     }
+                        // }
                     }
                     else if((this.endPoint.y<this.startPoint.y) && (this.endPoint.x>=this.startPoint.x-this.threshold && this.endPoint.x<=this.startPoint.x+this.threshold))
                     {
-                        this.startItem.runAction(cc.MoveBy.create(1,0,-100*this.imgBoard.getScaleY()));
-                        this.endItem.runAction(cc.MoveBy.create(1,0,100*this.imgBoard.getScaleY()));
+                        this.startItem.runAction(cc.MoveBy.create(.5,0,-100*this.imgBoard.getScaleY()));
+                        this.endItem.runAction(cc.MoveBy.create(.5,0,100*this.imgBoard.getScaleY()));
                         cc.log("Down");
                         this.allItem[i][j] = this.startItem;
                         this.allItem[i-1][j] = this.endItem;
+                        this.searchMatch(i,j);
+                        this.searchMatch(i-1,j);
 
-                        for(var i=0;i<this.allItem.length;i++)
-                        {
-                            for(var j=0;j<this.allItem[i].length;j++)
-                            {
-                                cc.log("End Tag--->  "+this.allItem[i][j].getTag());
-                            }
-                        }
+                        // for(var i=0;i<this.allItem.length;i++)
+                        // {
+                        //     for(var j=0;j<this.allItem[i].length;j++)
+                        //     {
+                        //         cc.log("End Tag--->  "+this.allItem[i][j].getTag());
+                        //     }
+                        // }
                     }
                     else if((this.endPoint.y>this.startPoint.y) && (this.endPoint.x>=this.startPoint.x-this.threshold && this.endPoint.x<=this.startPoint.x+this.threshold))
                     {
-                        this.startItem.runAction(cc.MoveBy.create(1,0,100*this.imgBoard.getScaleY()));
-                        this.endItem.runAction(cc.MoveBy.create(1,0,-100*this.imgBoard.getScaleY()));
+                        this.startItem.runAction(cc.MoveBy.create(.5,0,100*this.imgBoard.getScaleY()));
+                        this.endItem.runAction(cc.MoveBy.create(.5,0,-100*this.imgBoard.getScaleY()));
                         cc.log("Up");
                         this.allItem[i][j] = this.startItem;
                         this.allItem[i+1][j] = this.endItem;
+                        this.searchMatch(i,j);
+                        this.searchMatch(i+1,j);
 
-                        for(var i=0;i<this.allItem.length;i++)
-                        {
-                            for(var j=0;j<this.allItem[i].length;j++)
-                            {
-                                cc.log("End Tag--->  "+this.allItem[i][j].getTag());
-                            }
-                        }
+                        // for(var i=0;i<this.allItem.length;i++)
+                        // {
+                        //     for(var j=0;j<this.allItem[i].length;j++)
+                        //     {
+                        //         cc.log("End Tag--->  "+this.allItem[i][j].getTag());
+                        //     }
+                        // }
                     }
                 }
             } 
@@ -362,11 +369,20 @@ var GamePlay = cc.Layer.extend({
                 
             });
             count=count+1;
-            for(var j=1; (currentCol+j<6 && currentCol+j>=0) && (this.allItem[currentRow][currentCol+j].getTag() == this.allItem[currentRow][currentCol].getTag()); j++){
+            //Horizontal search for each Down vertical element
+            for(var j=1; (currentCol+j<6 && currentCol+j>=0) && (this.allItem[currentRow+i][currentCol+j].getTag() == this.allItem[currentRow+i][currentCol].getTag()); j++){
                 matchHorizontal.push({
-                    row: currentRow,
+                    row: currentRow+i,
                     col: currentCol+j,
-                    val: this.allItem[currentRow][currentCol+j].getTag()
+                    val: this.allItem[currentRow+i][currentCol+j].getTag()
+                });
+                count=count+1;
+            }
+            for(var j=-1; (currentCol+j<6 && currentCol+j>=0) && (this.allItem[currentRow+i][currentCol+j].getTag() == this.allItem[currentRow+i][currentCol].getTag()); j--){
+                matchHorizontal.push({
+                    row: currentRow+i,
+                    col: currentCol+j,
+                    val: this.allItem[currentRow+i][currentCol+j].getTag()
                 });
                 count=count+1;
             }
@@ -380,8 +396,26 @@ var GamePlay = cc.Layer.extend({
                 val: this.allItem[currentRow+i][currentCol].getTag()
             });
             count=count+1;
+            //Horizontal search for each Up vertical element
+            for(var j=1; (currentCol+j<6 && currentCol+j>=0) && (this.allItem[currentRow+i][currentCol+j].getTag() == this.allItem[currentRow+i][currentCol].getTag()); j++){
+                matchHorizontal.push({
+                    row: currentRow+i,
+                    col: currentCol+j,
+                    val: this.allItem[currentRow+i][currentCol+j].getTag()
+                });
+                count=count+1;
+            }
+            for(var j=-1; (currentCol+j<6 && currentCol+j>=0) && (this.allItem[currentRow+i][currentCol+j].getTag() == this.allItem[currentRow+i][currentCol].getTag()); j--){
+                matchHorizontal.push({
+                    row: currentRow+i,
+                    col: currentCol+j,
+                    val: this.allItem[currentRow+i][currentCol+j].getTag()
+                });
+                count=count+1;
+            }
         }
 
+        //Horizontal Search
         for(var i=1; (currentCol+i<6 && currentCol+i>=0) && (this.allItem[currentRow][currentCol+i].getTag() == this.allItem[currentRow][currentCol].getTag()); i++){
             matchHorizontal.push({
                 row: currentRow,
@@ -389,6 +423,23 @@ var GamePlay = cc.Layer.extend({
                 val: this.allItem[currentRow][currentCol+i].getTag()
             });
             count=count+1;
+            //Vertical search for each right Horizontal element
+            for(var j=1; (currentRow+j<5 && currentRow+j>=0) && (this.allItem[currentRow+j][currentCol+i].getTag() == this.allItem[currentRow][currentCol+i].getTag()); j++){
+                matchHorizontal.push({
+                    row: currentRow+j,
+                    col: currentCol+i,
+                    val: this.allItem[currentRow+j][currentCol+i].getTag()
+                });
+                count=count+1;
+            }
+            for(var j=-1; (currentRow+j<5 && currentRow+j>=0) && (this.allItem[currentRow+j][currentCol+i].getTag() == this.allItem[currentRow][currentCol+i].getTag()); j--){
+                matchHorizontal.push({
+                    row: currentRow+j,
+                    col: currentCol+i,
+                    val: this.allItem[currentRow+j][currentCol+i].getTag()
+                });
+                count=count+1;
+            }
         }
 
         for(var i=-1; (currentCol+i<6 && currentCol+i>=0) && (this.allItem[currentRow][currentCol+i].getTag() == this.allItem[currentRow][currentCol].getTag()); i--){
@@ -398,8 +449,63 @@ var GamePlay = cc.Layer.extend({
                 val: this.allItem[currentRow][currentCol+i].getTag()
             });
             count=count+1;
+            //Vertical search for each left Horizontal element
+            for(var j=1; (currentRow+j<5 && currentRow+j>=0) && (this.allItem[currentRow+j][currentCol+i].getTag() == this.allItem[currentRow][currentCol+i].getTag()); j++){
+                matchHorizontal.push({
+                    row: currentRow+j,
+                    col: currentCol+i,
+                    val: this.allItem[currentRow+j][currentCol+i].getTag()
+                });
+                count=count+1;
+            }
+            for(var j=-1; (currentRow+j<5 && currentRow+j>=0) && (this.allItem[currentRow+j][currentCol+i].getTag() == this.allItem[currentRow][currentCol+i].getTag()); j--){
+                matchHorizontal.push({
+                    row: currentRow+j,
+                    col: currentCol+i,
+                    val: this.allItem[currentRow+j][currentCol+i].getTag()
+                });
+                count=count+1;
+            }
         }
         cc.log("Hi "+count);
+        if(count>=3)
+        
+        {
+            for(var i=0;i<matchHorizontal.length;i++)
+            {
+               //cc.log("horizontal tag "+this.allItem[matchHorizontal[i].row][matchHorizontal[i].col].getTag());
+               //cc.log("Hozi "+matchHorizontal.length);
+               this.allItem[matchHorizontal[i].row][matchHorizontal[i].col].setTag(10);
+               
+            }
+            for(var i=0;i<matchVertical.length;i++)
+            {
+               cc.log("vartical tag"+this.allItem[matchVertical[i].row][matchVertical[i].col].getTag());
+
+               this.allItem[matchVertical[i].row][matchVertical[i].col].setTag(10);
+            //    this.scheduleOnce(this.remove,1.5);
+
+               //this.allItem[matchVertical[i].row][matchVertical[i].col].removeFromParent();
+            }
+            this.runAction(cc.Sequence.create(cc.delayTime(1.3),cc.CallFunc.create(this.removeVisitedItem, this)));
+            this.scheduleOnce(this.remove,1.5);
+        }
+    
+    },
+    removeVisitedItem:function()
+    {
+        for(var i=0;i<this.allItem.length;i++)
+        {
+            for(var j=0;j<this.allItem[i].length;j++)
+            {
+                cc.log("pain--->  "+this.allItem[i][j].getTag());
+                if(this.allItem[i][j].getTag()==10)
+                {
+                    this.allItem[i][j].removeFromParent();
+                }
+            }
+        }
+        
     }
 
 });
