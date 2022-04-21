@@ -1,9 +1,24 @@
 var GamePlay = cc.Layer.extend({
     allItem:[],
+    //hi:[allItem],
     match:false,
     scoreDiamond:0,
     scoreGold:0,
     scoreRuby:0,
+    level:[
+        [
+            //level 1
+            ["target-bg",0,0],
+            ["top",0,25],
+            ["board",0,25],
+        ],
+        [
+            //level 2
+            ["target-bg",0,0],
+            ["top",0,0],
+        ],
+
+    ],
     init:function()
     {
         if (this._super())
@@ -16,7 +31,7 @@ var GamePlay = cc.Layer.extend({
             this.setTouchEnable();
             this.totalScore();
            
-            this.runAction(cc.Sequence.create(cc.delayTime(45),cc.CallFunc.create(this.gameOver, this)));
+            //this.runAction(cc.Sequence.create(cc.delayTime(20),cc.CallFunc.create(this.gameOver, this)));
         
             
             return true;
@@ -27,7 +42,8 @@ var GamePlay = cc.Layer.extend({
     loadBackground:function()
     {
         var appDelegate=AppDelegate.sharedApplication();
-        this.imgBackground=cc.Sprite.create(folderGameResource+"target-bg.png");
+        var strBackground = this.level[appDelegate.gameLevel][0][0];
+        this.imgBackground=cc.Sprite.create(folderGameResource+strBackground+".png");
         this.imgBackground.setScaleX(cc.winSize.width/this.imgBackground.getContentSize().width);
         this.imgBackground.setScaleY(cc.winSize.height/this.imgBackground.getContentSize().height);
         this.imgBackground.setPosition(cc.winSize.width/2, cc.winSize.height/2);
@@ -37,21 +53,12 @@ var GamePlay = cc.Layer.extend({
     loadBackgroundTop:function()
     {
         var appDelegate=AppDelegate.sharedApplication();
-        //var strBackground = this.Level[appDelegate.gameLevel][0][0];
-        this.imgBackgroundTop=cc.Sprite.create(folderGameResource+"top.png");
+        var strBackgroundTop = this.level[appDelegate.gameLevel][1][0];
+        this.imgBackgroundTop=cc.Sprite.create(folderGameResource+strBackgroundTop+".png");
         this.imgBackgroundTop.setScaleX(cc.winSize.width/this.imgBackgroundTop.getContentSize().width);
         //this.imgBackgroundTop.setScaleY(cc.winSize.height);
-        this.imgBackgroundTop.setPosition(cc.winSize.width/2, cc.winSize.height-this.imgBackground.getScaleY()*25);
+        this.imgBackgroundTop.setPosition(cc.winSize.width/2, cc.winSize.height-this.imgBackground.getScaleY()*this.level[appDelegate.gameLevel][1][2]);
         this.addChild(this.imgBackgroundTop);
-        
-    },
-    loadCage:function()
-    {
-        var appDelegate=AppDelegate.sharedApplication();
-        this.imgScoreBoard=cc.Sprite.create(folderGameResource+"cage.png");
-        this.imgScoreBoard.setScale(appDelegate.deviceScaleFloat);
-        this.imgScoreBoard.setPosition(this.imgBoard.getPositionX()+200*this.imgBoard.getScaleX(), this.imgBoard.getPositionY()+450*this.imgBoard.getScaleY());
-        this.addChild(this.imgScoreBoard);
         
     },
     loadScoreBoard:function()
@@ -298,7 +305,7 @@ var GamePlay = cc.Layer.extend({
         {
             for(var j=0;j<this.allItem[i].length;j++)
             {
-                cc.log("Tag--->  "+this.allItem[i][j].getTag());
+                //cc.log("Tag--->  "+this.allItem[i][j].getTag());
                 this.startRect = this.allItem[i][j].getBoundingBox();
                 this.startPoint = touch.getLocation();
                 if(cc.rectContainsPoint(this.startRect, this.startPoint)) 
@@ -329,52 +336,57 @@ var GamePlay = cc.Layer.extend({
                 
                 this.endRect = this.allItem[i][j].getBoundingBox();
                 this.endPoint = touch.getLocation();
-                
                 if(cc.rectContainsPoint(this.endRect, this.endPoint)) 
                 {
                     this.endItem = this.allItem[i][j];
-                    //cc.log("i value "+i);
-                    //cc.log("j value "+j);
-                    if((this.endPoint.x>this.startPoint.x) && (this.endPoint.y>=this.startPoint.y-this.threshold && this.endPoint.y<=this.startPoint.y+this.threshold))
-                    {
-                        cc.log("Right");
-                        this.allItem[i][j] = this.startItem;
-                        this.allItem[i][j-1] = this.endItem;
-                        var touchSide = "right";
-                        this.searchMatch(i,j,i,j-1,touchSide);
-                    }
-                    else if((this.endPoint.x<this.startPoint.x)&& (this.endPoint.y>=this.startPoint.y-this.threshold && this.endPoint.y<=this.startPoint.y+this.threshold))
-                    {
-                        cc.log("Left");
-                        var touchSide = "left";
-                        this.allItem[i][j] = this.startItem;
-                        this.allItem[i][j+1] = this.endItem;
-                        this.searchMatch(i,j,i,j+1,touchSide);
-                        
-                    }
-                    else if((this.endPoint.y<this.startPoint.y) && (this.endPoint.x>=this.startPoint.x-this.threshold && this.endPoint.x<=this.startPoint.x+this.threshold))
-                    {
-                        // this.startItem.runAction(cc.MoveBy.create(.5,0,-100*this.imgBoard.getScaleY()));
-                        // this.endItem.runAction(cc.MoveBy.create(.5,0,100*this.imgBoard.getScaleY()));
-                        cc.log("Down");
-                        var touchSide="down"
-                        this.allItem[i][j] = this.startItem;
-                        this.allItem[i-1][j] = this.endItem;
-                        this.searchMatch(i,j,i-1,j,touchSide);
-                    }
-                    else if((this.endPoint.y>this.startPoint.y) && (this.endPoint.x>=this.startPoint.x-this.threshold && this.endPoint.x<=this.startPoint.x+this.threshold))
-                    {
-                        // this.startItem.runAction(cc.MoveBy.create(.5,0,100*this.imgBoard.getScaleY()));
-                        // this.endItem.runAction(cc.MoveBy.create(.5,0,-100*this.imgBoard.getScaleY()));
-                        cc.log("Up");
-                        var touchSide="up"
-                        this.allItem[i][j] = this.startItem;
-                        this.allItem[i+1][j] = this.endItem;
-                        this.searchMatch(i,j,i+1,j,touchSide);
-                    }
+                    cc.log("i value "+i);
+                    cc.log("j value "+j);
+                    var currentRow = i;
+                    var currentCol = j;
                 }
-            } 
+            }
         }
+        if((this.endPoint.x>this.startPoint.x) && (this.endPoint.y>=this.startPoint.y-this.threshold && this.endPoint.y<=this.startPoint.y+this.threshold))
+        {
+            cc.log("Right");
+            this.allItem[currentRow][currentCol] = this.startItem;
+            this.allItem[currentRow][currentCol-1] = this.endItem;
+            var touchSide = "right";
+            this.searchMatch(currentRow,currentCol,currentRow,currentCol-1,touchSide);
+        }
+        else if((this.endPoint.x<this.startPoint.x)&& (this.endPoint.y>=this.startPoint.y-this.threshold && this.endPoint.y<=this.startPoint.y+this.threshold))
+        {
+            cc.log("Left");
+            var touchSide = "left";
+            this.allItem[currentRow][currentCol] = this.startItem;
+            this.allItem[currentRow][currentCol+1] = this.endItem;
+            this.searchMatch(currentRow,currentCol,currentRow,(currentCol+1),touchSide);
+            // this.searchMatch(i,j,i,j+1,touchSide);
+            
+        }
+        else if((this.endPoint.y<this.startPoint.y) && (this.endPoint.x>=this.startPoint.x-this.threshold && this.endPoint.x<=this.startPoint.x+this.threshold))
+        {
+            // this.startItem.runAction(cc.MoveBy.create(.5,0,-100*this.imgBoard.getScaleY()));
+            // this.endItem.runAction(cc.MoveBy.create(.5,0,100*this.imgBoard.getScaleY()));
+            cc.log("Down");
+            var touchSide="down"
+            this.allItem[currentRow][currentCol] = this.startItem;
+            this.allItem[currentRow-1][currentCol] = this.endItem;
+            this.searchMatch(currentRow,currentCol,currentRow-1,currentCol,touchSide);
+        }
+        else if((this.endPoint.y>this.startPoint.y) && (this.endPoint.x>=this.startPoint.x-this.threshold && this.endPoint.x<=this.startPoint.x+this.threshold))
+        {
+            // this.startItem.runAction(cc.MoveBy.create(.5,0,100*this.imgBoard.getScaleY()));
+            // this.endItem.runAction(cc.MoveBy.create(.5,0,-100*this.imgBoard.getScaleY()));
+            cc.log("Up");
+            var touchSide="up"
+            this.allItem[currentRow][currentCol] = this.startItem;
+            this.allItem[currentRow+1][currentCol] = this.endItem;
+            this.searchMatch(currentRow,currentCol,currentRow+1,currentCol,touchSide);
+        }
+                
+            
+        
         console.log("Ended");
 	},
     
@@ -383,6 +395,7 @@ var GamePlay = cc.Layer.extend({
         matchHorizontal = [];
         matchVertical = [];
         var count = 1;
+        cc.log(currentRow, currentCol,prevRow, prevCol,touchSide);
         // Vertical Search
         matchVertical.push({
                 row: currentRow,
@@ -521,9 +534,11 @@ var GamePlay = cc.Layer.extend({
             }
             for(var i=0;i<matchHorizontal.length;i++)
             {
-               //cc.log("horizontal tag "+this.allItem[matchHorizontal[i].row][matchHorizontal[i].col].getTag());
+              
                //cc.log("Hozi "+matchHorizontal.length);
                this.allItem[matchHorizontal[i].row][matchHorizontal[i].col].setTag(10);
+               cc.log("horizontal tag "+this.allItem[matchHorizontal[i].row][matchHorizontal[i].col].getTag());
+         
                
             }
             for(var i=0;i<matchVertical.length;i++)
@@ -536,7 +551,7 @@ var GamePlay = cc.Layer.extend({
                //this.allItem[matchVertical[i].row][matchVertical[i].col].removeFromParent();
             }
             this.runAction(cc.Sequence.create(cc.delayTime(0.8),cc.CallFunc.create(this.removeVisitedItem, this)));
-            this.scheduleOnce(this.remove,1.5);
+            //this.scheduleOnce();
         }
         else{
             if(touchSide=="right")
@@ -630,7 +645,7 @@ var GamePlay = cc.Layer.extend({
             var gameStatus = "lose";
         }
         var gameEnd = GameEnd.create(gameStatus);
-        this.addChild(gameEnd,1);
+        this.addChild(gameEnd,5);
         
       
         // else

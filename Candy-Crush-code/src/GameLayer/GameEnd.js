@@ -25,7 +25,7 @@ var GameEnd=cc.Layer.extend({
   
         if(this.gameStatus=="win")
         {
-            console.log("win");
+            console.log("lose");
             this.setBackground();
             this.loadBackgroundColor();
             this.loadWinPanel();
@@ -33,6 +33,8 @@ var GameEnd=cc.Layer.extend({
             this.loadPillow();
             this.loadStar();
             this.loadWhiteSpark();
+            this.nextButton();
+            //this.setTouchEnable();
        
         }
         if(this.gameStatus=="lose")
@@ -42,12 +44,14 @@ var GameEnd=cc.Layer.extend({
             // 
             console.log("defeat");
             this.setBackground();
-            this.loadBackgroundColor();
-            // this.loadWinPanel();
-            // this.loadWellDone();
-            // this.loadPillow();
-            // this.loadStar();
-            // this.loadWhiteSpark();
+            //.loadBackgroundColor();
+            this.loadWinPanel();
+            this.loadWellDone();
+            this.loadPillow();
+            this.loadStar();
+            this.loadWhiteSpark();
+            this.nextButton();
+            //this.setTouchEnable();
             
         }
     },
@@ -58,6 +62,7 @@ var GameEnd=cc.Layer.extend({
         this.imgBackground.setScaleY(cc.winSize.height/this.imgBackground.getContentSize().height);
         this.imgBackground.setPosition(cc.winSize.width/2, cc.winSize.height/2);
         this.addChild(this.imgBackground);
+        this.imgBackground.setOpacity(0);
     },
     loadBackgroundColor:function()
     {
@@ -122,8 +127,48 @@ var GameEnd=cc.Layer.extend({
         var action1 = cc.ScaleTo.create(1,this.imgWhiteSpark.getScaleX()*2,-this.imgWhiteSpark.getScaleY()*2);
         this.imgWhiteSpark.runAction(action1)
     },
+    nextButton:function()
+    {
+        var strNextImage = folderGameResource+"next.png";
+        this.btnNext = new ccui.Button();
+        this.btnNext.loadTextures(strNextImage);
+        this.btnNext.setScale(this.imgPillow.getScale()/2);
+        
+        this.btnNext.setPosition(this.imgPillow.getPositionX(), this.imgPillow.getPositionY()-this.imgBackground.getScaleY()*70);
+        this.btnNext.addTouchEventListener(this.btnNextCallBack,this);
+        this.addChild(this.btnNext,3);
+        this.btnNext_action = cc.ScaleTo.create(.6, this.btnNext.getScaleX()+this.btnNext.getScaleX()/4,this.btnNext.getScaleY()+this.btnNext.getScaleY()/4);
+        this.btnNext_action1 = cc.ScaleTo.create(.6, this.btnNext.getScaleX(),this.btnNext.getScaleY());
+        this.btnNext_sequence = cc.RepeatForever.create(cc.Sequence.create(this.btnNext_action,this.btnNext_action1));
+        this.btnNext.runAction( this.btnNext_sequence);
  
- 
+    },
+    btnNextCallBack:function(sender,type)
+    {
+        // switch(type)
+        // {
+        //     case ccui.Widget.TOUCH_BEGAN:
+        //         break;
+
+        //     case ccui.Widget.TOUCH_ENDED:
+        //         cc.director.runScene(new GameNodeScene());
+        //         break;
+        // }
+        // var gamePlay=GamePlay.create();
+        // this.addChild(gamePlay,5);
+
+        // var appDelegate=AppDelegate.sharedApplication();
+        // appDelegate.gameHud.loadStorePanel(Panel.GamePlay);
+       // cc.director.runScene(new GameNodeScene());
+        cc.log("hello")
+        var appDelegate = AppDelegate.sharedApplication();
+        //appDelegate.gameHud.loadStorePanel(Panel.GamePlay);
+        this.removeFromParent();
+      
+        
+        
+    },
+  
 });
 
 GameEnd.create=function(gameStatus)

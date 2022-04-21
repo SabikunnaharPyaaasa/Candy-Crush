@@ -11,6 +11,7 @@ var AppDelegate=cc.Layer.extend({
     gameNode:null,
     gameHud:null,
     totalCoin:0,
+    gameLevel:0,
     isTouchSwallowed:false,
 
     init:function()
