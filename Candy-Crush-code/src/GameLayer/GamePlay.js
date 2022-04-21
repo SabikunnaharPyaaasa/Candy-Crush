@@ -1,17 +1,22 @@
 var GamePlay = cc.Layer.extend({
     allItem:[],
     match:false,
-    score:0,
+    scoreDiamond:0,
+    scoreGold:0,
+    scoreRuby:0,
     init:function()
     {
         if (this._super())
         {
             this.loadBackground();
-            this.loadCage(); 
+            this.loadBackgroundTop();
             this.loadBoard(); 
+            //this.loadCage();
             this.loadScoreBoard();
             this.setTouchEnable();
             this.totalScore();
+           
+            this.runAction(cc.Sequence.create(cc.delayTime(45),cc.CallFunc.create(this.gameOver, this)));
         
             
             return true;
@@ -29,36 +34,86 @@ var GamePlay = cc.Layer.extend({
         this.addChild(this.imgBackground);
         
     },
+    loadBackgroundTop:function()
+    {
+        var appDelegate=AppDelegate.sharedApplication();
+        //var strBackground = this.Level[appDelegate.gameLevel][0][0];
+        this.imgBackgroundTop=cc.Sprite.create(folderGameResource+"top.png");
+        this.imgBackgroundTop.setScaleX(cc.winSize.width/this.imgBackgroundTop.getContentSize().width);
+        //this.imgBackgroundTop.setScaleY(cc.winSize.height);
+        this.imgBackgroundTop.setPosition(cc.winSize.width/2, cc.winSize.height-this.imgBackground.getScaleY()*25);
+        this.addChild(this.imgBackgroundTop);
+        
+    },
     loadCage:function()
     {
         var appDelegate=AppDelegate.sharedApplication();
         this.imgScoreBoard=cc.Sprite.create(folderGameResource+"cage.png");
         this.imgScoreBoard.setScale(appDelegate.deviceScaleFloat);
-        this.imgScoreBoard.setPosition(cc.winSize.width/2+50*this.imgBackground.getScaleX(), cc.winSize.height/2+40*this.imgBackground.getScaleY());
+        this.imgScoreBoard.setPosition(this.imgBoard.getPositionX()+200*this.imgBoard.getScaleX(), this.imgBoard.getPositionY()+450*this.imgBoard.getScaleY());
         this.addChild(this.imgScoreBoard);
         
     },
     loadScoreBoard:function()
     {
         var appDelegate=AppDelegate.sharedApplication();
-        this.imgScoreBoard=cc.Sprite.create(folderGameResource+"score-board.png");
-        this.imgScoreBoard.setScale(appDelegate.deviceScaleFloat*3);
-        this.imgScoreBoard.setPosition(cc.winSize.width/2-50*this.imgBackground.getScaleX(), cc.winSize.height/2+10*this.imgBackground.getScaleY());
-        this.addChild(this.imgScoreBoard);
+        for(var i=0;i<3;i++)
+        {
+            this.imgScoreBoard=cc.Sprite.create(folderGameResource+"score-board.png");
+            this.imgScoreBoard.setScale(appDelegate.deviceScaleFloat*3);
+            this.imgScoreBoard.setPosition(this.imgBoard.getPositionX()-200*this.imgBoard.getScaleX()+i*200*this.imgBoard.getScaleX(), cc.winSize.height-this.imgBackground.getScaleY()*45);
+            this.addChild(this.imgScoreBoard);
+            if(i==0){
+                this.imgDiamondIcon=cc.Sprite.create(folderGameResource+"diamond.png");
+                this.imgDiamondIcon.setScale(this.imgBoard.getScale()*1.3);
+                this.imgDiamondIcon.setPosition(this.imgScoreBoard.getPositionX()-30*this.imgBackground.getScaleX(),this.imgScoreBoard.getPositionY()+20*this.imgBackground.getScaleY());
+                this.imgDiamondIcon.setTag(1);
+                this.addChild(this.imgDiamondIcon);
+                var dia_action1 = cc.RotateTo.create(1,45);
+                var dia_action2 = cc.RotateTo.create(1,-45);
+                var dia_sequence = cc.RepeatForever.create(cc.Sequence.create(dia_action1,dia_action2));
+                this.imgDiamondIcon.runAction(dia_sequence);
+
+            }
+            if(i==1){
+                this.imgGoldIcon=cc.Sprite.create(folderGameResource+"gold.png");
+                this.imgGoldIcon.setScale(this.imgBoard.getScale()*1.3);
+                this.imgGoldIcon.setPosition(this.imgScoreBoard.getPositionX()-30*this.imgBackground.getScaleX(),this.imgScoreBoard.getPositionY()+20*this.imgBackground.getScaleY());
+                this.imgGoldIcon.setTag(1);
+                this.addChild(this.imgGoldIcon);
+                var gold_action1 = cc.RotateTo.create(1,-45);
+                var gold_action2 = cc.RotateTo.create(1,45);
+                var gold_sequence = cc.RepeatForever.create(cc.Sequence.create(gold_action1,gold_action2));
+                this.imgGoldIcon.runAction(gold_sequence);
+            }
+            if(i==2){
+                this.imgRubyIcon=cc.Sprite.create(folderGameResource+"ruby.png");
+                this.imgRubyIcon.setScale(this.imgBoard.getScale()*1.3);
+                this.imgRubyIcon.setPosition(this.imgScoreBoard.getPositionX()-30*this.imgBackground.getScaleX(),this.imgScoreBoard.getPositionY()+20*this.imgBackground.getScaleY());
+                this.imgRubyIcon.setTag(1);
+                this.addChild(this.imgRubyIcon);
+                var ruby_action1 = cc.ScaleTo.create(1,-this.imgRubyIcon.getScaleX(),this.imgRubyIcon.getScaleY());
+                var ruby_action2 = cc.ScaleTo.create(1,this.imgRubyIcon.getScaleX(),this.imgRubyIcon.getScale());
+                var ruby_sequence = cc.RepeatForever.create(cc.Sequence.create(ruby_action1,ruby_action2));
+                this.imgRubyIcon.runAction(ruby_sequence);
+            }
+        }
+
+        
         
     },
     loadBoard:function()
     {
         var appDelegate=AppDelegate.sharedApplication();
         this.imgBoard=cc.Sprite.create(folderGameResource+"board.png");
-        this.imgBoard.setScale(appDelegate.deviceScaleFloat);
-        this.imgBoard.setPosition(cc.winSize.width/2, cc.winSize.height/2-80*this.imgBackground.getScaleY());
+        this.imgBoard.setScale(appDelegate.deviceScaleFloat*1.4);
+        this.imgBoard.setPosition(cc.winSize.width/2, this.imgBoard.getContentSize().height/2+50*this.imgBackground.getScaleY());
         this.addChild(this.imgBoard);
 
-        //this.loadAllItem();
-        this.loadDiamond();
+        this.loadAllItem();
+        //this.loadDiamond();
     },
-    loadDiamond:function()
+    loadAllItem:function()
     {
         for(var i=0;i<5;i++) 
         {
@@ -111,11 +166,23 @@ var GamePlay = cc.Layer.extend({
     },
     totalScore:function()
     {
-        this.lblScore=new cc.LabelTTF(this.score, "Arial");
-        this.lblScore.setFontSize(60);
-        this.lblScore.setPosition(cc.p(this.imgScoreBoard.getPosition().x,this.imgScoreBoard.getPosition().y-20*this.imgScoreBoard.getScaleY()));
-        this.lblScore.setColor(cc.color(255,0,0));
-        this.addChild(this.lblScore);
+        this.lblDiamondScore=new cc.LabelTTF(this.score, "Arial");
+        this.lblDiamondScore.setFontSize(60);
+        this.lblDiamondScore.setPosition(cc.p(this.imgDiamondIcon.getPosition().x+25*this.imgScoreBoard.getScaleX(),this.imgDiamondIcon.getPosition().y-40*this.imgScoreBoard.getScaleY()));
+        this.lblDiamondScore.setColor(cc.color(0,32,255));
+        this.addChild(this.lblDiamondScore);
+
+        this.lblGoldScore=new cc.LabelTTF(this.score, "Arial");
+        this.lblGoldScore.setFontSize(60);
+        this.lblGoldScore.setPosition(cc.p(this.imgGoldIcon.getPosition().x+25*this.imgScoreBoard.getScaleX(),this.imgGoldIcon.getPosition().y-40*this.imgScoreBoard.getScaleY()));
+        this.lblGoldScore.setColor(cc.color(255,255,0));
+        this.addChild(this.lblGoldScore);
+
+        this.lblRubyScore=new cc.LabelTTF(this.score, "Arial");
+        this.lblRubyScore.setFontSize(60);
+        this.lblRubyScore.setPosition(cc.p(this.imgRubyIcon.getPosition().x+25*this.imgScoreBoard.getScaleX(),this.imgRubyIcon.getPosition().y-40*this.imgScoreBoard.getScaleY()));
+        this.lblRubyScore.setColor(cc.color(255,0,0));
+        this.addChild(this.lblRubyScore);
     },
     addItem:function(position)
     {
@@ -166,15 +233,17 @@ var GamePlay = cc.Layer.extend({
                 this.imgDiamondAnimation.setTag(1);
                 this.addChild(this.imgDiamondAnimation);   
                 var fade_action = cc.FadeIn.create(.1);
-                var scale_action = cc.ScaleBy.create(1,this.imgDiamondAnimation.getScaleX()*4,this.imgDiamondAnimation.getScaleY()*4);
+                var scale_action = cc.ScaleBy.create(1,this.imgDiamondAnimation.getScaleX()*3,this.imgDiamondAnimation.getScaleY()*3);
                 var fade_out = cc.FadeOut.create(.3);
                 var sequence = cc.Sequence.create(fade_action,scale_action,fade_out)
-                this.imgDiamondAnimation.runAction(sequence);  
+                this.imgDiamondAnimation.runAction(sequence); 
+                this.scoreDiamond= this.scoreDiamond+1;
+                this.lblDiamondScore.setString(this.scoreDiamond);
             break;
 
             case 2:
                 this.imgGoldAnimation=cc.Sprite.create(folderGameResource+"yellow-spark.png");
-                this.imgGoldAnimation.setScale(this.imgBoard.getScale()/8);
+                this.imgGoldAnimation.setScale(this.imgBoard.getScale()/10);
                 this.imgGoldAnimation.setPosition(position);
                 this.imgGoldAnimation.setTag(2);
                 this.addChild(this.imgGoldAnimation);   
@@ -184,11 +253,13 @@ var GamePlay = cc.Layer.extend({
                 var fade_out = cc.FadeOut.create(.3);
                 var sequence = cc.Sequence.create(fade_action,scale_action,fade_out)
                 this.imgGoldAnimation.runAction(sequence); 
+                this.scoreGold= this.scoreGold+1;
+                this.lblGoldScore.setString(this.scoreGold);
             break;
 
             case 3:
                 this.imgRubyAnimation=cc.Sprite.create(folderGameResource+"red-spark.png");
-                this.imgRubyAnimation.setScale(this.imgBoard.getScale()/8);
+                this.imgRubyAnimation.setScale(this.imgBoard.getScale()/10);
                 this.imgRubyAnimation.setPosition(position);
                 this.imgRubyAnimation.setTag(3);
                 this.addChild(this.imgRubyAnimation);
@@ -196,7 +267,9 @@ var GamePlay = cc.Layer.extend({
                 var scale_action = cc.ScaleBy.create(.5,this.imgRubyAnimation.getScaleX()*20,this.imgRubyAnimation.getScaleY()*20);
                 var fade_out = cc.FadeOut.create(.3);
                 var sequence = cc.Sequence.create(fade_action,scale_action,fade_out)
-                this.imgRubyAnimation.runAction(sequence);    
+                this.imgRubyAnimation.runAction(sequence);  
+                this.scoreRuby= this.scoreRuby+1;
+                this.lblRubyScore.setString(this.scoreRuby);
             break;
         }
     },
@@ -423,28 +496,28 @@ var GamePlay = cc.Layer.extend({
       
         if(count>=3)
         {
-            this.score = this.score+count;
-            cc.log("Score"+this.score);
-            this.lblScore.setString(this.score);
+            // this.score = this.score+count;
+            // cc.log("Score"+this.score);
+            
             if(touchSide=="right")
             {
-                this.startItem.runAction(cc.MoveBy.create(.5,100*this.imgBoard.getScaleX(),0));
-                this.endItem.runAction(cc.MoveBy.create(.5,-100*this.imgBoard.getScaleX(),0));
+                this.startItem.runAction(cc.MoveBy.create(.3,100*this.imgBoard.getScaleX(),0));
+                this.endItem.runAction(cc.MoveBy.create(.3,-100*this.imgBoard.getScaleX(),0));
             }
             if(touchSide=="left")
             {
-                this.startItem.runAction(cc.MoveBy.create(.5,-100*this.imgBoard.getScaleX(),0));
-                this.endItem.runAction(cc.MoveBy.create(.5,100*this.imgBoard.getScaleX(),0));
+                this.startItem.runAction(cc.MoveBy.create(.3,-100*this.imgBoard.getScaleX(),0));
+                this.endItem.runAction(cc.MoveBy.create(.3,100*this.imgBoard.getScaleX(),0));
             }
             if(touchSide=="up")
             {
-                this.startItem.runAction(cc.MoveBy.create(.5,0,100*this.imgBoard.getScaleY()));
-                this.endItem.runAction(cc.MoveBy.create(.5,0,-100*this.imgBoard.getScaleY()));
+                this.startItem.runAction(cc.MoveBy.create(.3,0,100*this.imgBoard.getScaleY()));
+                this.endItem.runAction(cc.MoveBy.create(.3,0,-100*this.imgBoard.getScaleY()));
             }
             if(touchSide=="down")
             {
-                this.startItem.runAction(cc.MoveBy.create(.5,0,-100*this.imgBoard.getScaleY()));
-                this.endItem.runAction(cc.MoveBy.create(.5,0,100*this.imgBoard.getScaleY()));
+                this.startItem.runAction(cc.MoveBy.create(.3,0,-100*this.imgBoard.getScaleY()));
+                this.endItem.runAction(cc.MoveBy.create(.3,0,100*this.imgBoard.getScaleY()));
             }
             for(var i=0;i<matchHorizontal.length;i++)
             {
@@ -462,7 +535,7 @@ var GamePlay = cc.Layer.extend({
 
                //this.allItem[matchVertical[i].row][matchVertical[i].col].removeFromParent();
             }
-            this.runAction(cc.Sequence.create(cc.delayTime(1.3),cc.CallFunc.create(this.removeVisitedItem, this)));
+            this.runAction(cc.Sequence.create(cc.delayTime(0.8),cc.CallFunc.create(this.removeVisitedItem, this)));
             this.scheduleOnce(this.remove,1.5);
         }
         else{
@@ -546,6 +619,26 @@ var GamePlay = cc.Layer.extend({
             }
         }
         
+    },
+    gameOver:function()
+    {
+        if(this.scoreDiamond>10 && this.scoreGold>10 && this.scoreRuby>10)
+        {
+            var gameStatus = "win";
+        }
+        else{
+            var gameStatus = "lose";
+        }
+        var gameEnd = GameEnd.create(gameStatus);
+        this.addChild(gameEnd,1);
+        
+      
+        // else
+        // {
+        //     var gameStatus = "lose";
+        //     var gameEnd = GameEnd.create(gameStatus);
+        //     this.addChild(gameEnd,1);
+        // }
     }
 
 });

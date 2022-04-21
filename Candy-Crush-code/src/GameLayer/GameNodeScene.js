@@ -31,7 +31,7 @@ var GameNode = cc.Layer.extend({
             this.preload_resources.push(folderGameResource+"yellow-spark.png");
             this.preload_resources.push(folderGameResource+"red-spark.png");
             this.preload_resources.push(folderGameResource+"blue-spark.png");
-            // this.preload_resources.push(folderGameResource+"enemy-merge-animation.png");
+            this.preload_resources.push(folderGameResource+"top.png");
             
             
 
