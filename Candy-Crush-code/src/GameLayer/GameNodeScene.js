@@ -23,14 +23,17 @@ var GameNode = cc.Layer.extend({
             this.preload_resources=[];
             this.preload_resources.push(folderGameResource+"target-bg.png");
             this.preload_resources.push(folderGameResource+"diamond.png");
+            this.preload_resources.push(folderGameResource+"green-diamond.png");
             this.preload_resources.push(folderGameResource+"gold.png");
             this.preload_resources.push(folderGameResource+"ruby.png");
             this.preload_resources.push(folderGameResource+"board.png");
+            this.preload_resources.push(folderGameResource+"board2.png");
             this.preload_resources.push(folderGameResource+"score-board.png");
             this.preload_resources.push(folderGameResource+"cage.png");
             this.preload_resources.push(folderGameResource+"yellow-spark.png");
             this.preload_resources.push(folderGameResource+"red-spark.png");
             this.preload_resources.push(folderGameResource+"blue-spark.png");
+            this.preload_resources.push(folderGameResource+"green-spark.png");
             this.preload_resources.push(folderGameResource+"top.png");
             
             

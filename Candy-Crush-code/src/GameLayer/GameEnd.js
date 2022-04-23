@@ -34,6 +34,7 @@ var GameEnd=cc.Layer.extend({
             this.loadStar();
             this.loadWhiteSpark();
             this.nextButton();
+            this.showGameLevel();
             //this.setTouchEnable();
        
         }
@@ -51,6 +52,7 @@ var GameEnd=cc.Layer.extend({
             this.loadStar();
             this.loadWhiteSpark();
             this.nextButton();
+            this.showGameLevel();
             //this.setTouchEnable();
             
         }
@@ -62,7 +64,7 @@ var GameEnd=cc.Layer.extend({
         this.imgBackground.setScaleY(cc.winSize.height/this.imgBackground.getContentSize().height);
         this.imgBackground.setPosition(cc.winSize.width/2, cc.winSize.height/2);
         this.addChild(this.imgBackground);
-        this.imgBackground.setOpacity(0);
+        //this.imgBackground.setOpacity(0);
     },
     loadBackgroundColor:function()
     {
@@ -79,6 +81,15 @@ var GameEnd=cc.Layer.extend({
         //this.imgPanel.setScaleY(cc.winSize.height/this.imgBackground.getContentSize().height);
         this.imgPanel.setPosition(cc.winSize.width/2, cc.winSize.height/2);
         this.addChild(this.imgPanel,2);
+    },
+    showGameLevel:function()
+    {
+        var appDelegate = AppDelegate.sharedApplication();
+        this.lblGameLevel=new cc.LabelTTF("Game Level "+(appDelegate.gameLevel+1), "Arial");
+        this.lblGameLevel.setFontSize(50);
+        this.lblGameLevel.setPosition(cc.p(this.imgPanel.getPosition().x,this.imgPanel.getPosition().y+185*this.imgPanel.getScaleY()));
+        this.lblGameLevel.setColor(cc.color(255,255,0));
+        this.addChild(this.lblGameLevel,3);
     },
 
     loadWellDone:function()
@@ -145,24 +156,12 @@ var GameEnd=cc.Layer.extend({
     },
     btnNextCallBack:function(sender,type)
     {
-        // switch(type)
-        // {
-        //     case ccui.Widget.TOUCH_BEGAN:
-        //         break;
-
-        //     case ccui.Widget.TOUCH_ENDED:
-        //         cc.director.runScene(new GameNodeScene());
-        //         break;
-        // }
-        // var gamePlay=GamePlay.create();
-        // this.addChild(gamePlay,5);
-
-        // var appDelegate=AppDelegate.sharedApplication();
-        // appDelegate.gameHud.loadStorePanel(Panel.GamePlay);
-       // cc.director.runScene(new GameNodeScene());
-        cc.log("hello")
+       
+        cc.log("hello");
         var appDelegate = AppDelegate.sharedApplication();
-        //appDelegate.gameHud.loadStorePanel(Panel.GamePlay);
+        appDelegate.gameLevel = appDelegate.gameLevel+1;
+        var appDelegate = AppDelegate.sharedApplication();
+        appDelegate.gameHud.loadStorePanel(Panel.GamePlay);
         this.removeFromParent();
       
         
